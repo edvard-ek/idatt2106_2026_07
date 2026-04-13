@@ -1,0 +1,44 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd frontend
+          npm run test:unit -- --run   # Vitest; adjust if using Jest
+
+      - name: Build
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Deploy (e.g. to Nginx / S3 / Vercel)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Deploy step here"

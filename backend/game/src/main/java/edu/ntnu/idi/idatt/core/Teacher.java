@@ -1,5 +1,0 @@
-package edu.ntnu.idi.idatt.core;
-
-public class Teacher extends User {
-
-}

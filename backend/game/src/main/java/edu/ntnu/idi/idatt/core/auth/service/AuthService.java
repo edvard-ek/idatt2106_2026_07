@@ -1,7 +1,7 @@
 package edu.ntnu.idi.idatt.core.auth.service;
 
 import edu.ntnu.idi.idatt.core.auth.dto.AuthResponse;
-import edu.ntnu.idi.idatt.core.auth.dto.AuthRole;
+import edu.ntnu.idi.idatt.core.auth.enums.AuthRole;
 import edu.ntnu.idi.idatt.core.auth.dto.AuthUserResponse;
 import edu.ntnu.idi.idatt.core.auth.dto.LoginRequest;
 import edu.ntnu.idi.idatt.core.auth.dto.RefreshTokenRequest;

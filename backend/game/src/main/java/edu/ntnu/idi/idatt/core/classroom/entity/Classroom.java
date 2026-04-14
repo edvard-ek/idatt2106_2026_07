@@ -11,8 +11,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -37,9 +39,13 @@ public class Classroom {
   @JoinColumn(name = "head_teacher_id")
   private Teacher headTeacher;
 
-  @ManyToOne
-  @JoinColumn(name = "teached_id")
-  private List<Teacher> teachers;
+  @ManyToMany
+  @JoinTable(
+      name = "classroom_teachers",
+      joinColumns = @JoinColumn(name = "classroom_id"),
+      inverseJoinColumns = @JoinColumn(name = "teacher_id")
+  )
+  private List<Teacher> teachers = new ArrayList<>();
 
   @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Pupil> pupils = new ArrayList<>();

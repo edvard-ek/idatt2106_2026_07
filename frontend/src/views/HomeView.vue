@@ -4,7 +4,7 @@
     <section class="relative mx-auto grid w-full max-w-6xl gap-10 lg:items-center">
         <div class="mx-auto">
           <RouterLink :class="buttonVariants({ size: 'lg' })" to="/login">
-            Play now
+            Log inn med Feide!
           </RouterLink>
         </div>
     </section>

@@ -1,5 +1,5 @@
 package edu.ntnu.idi.idatt.core;
 
-public class Teacher extends User {
+public class Pupil extends User {
 
 }

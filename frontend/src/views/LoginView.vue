@@ -16,7 +16,7 @@ interface SchoolOption {
 
 const schools = ref<SchoolOption[]>([])
 const loginUsername = ref('')
-const password = ref('')
+const password = ref('Password123!')
 const selectedSchoolId = ref<number | null>(null)
 const isSchoolModalOpen = ref(false)
 const isFetchingSchools = ref(false)
@@ -81,8 +81,8 @@ async function handleSubmit() {
     const session = (await response.json()) as AuthSession
     authStore.setSession(session)
     await router.push(getLandingPath(session.role))
-  } catch (error) {
-    submitError.value = error instanceof Error ? error.message : 'Innlogging mislyktes.'
+  } catch {
+    submitError.value = 'Innlogging mislyktes.'
   } finally {
     isSubmitting.value = false
   }

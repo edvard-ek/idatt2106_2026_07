@@ -12,6 +12,7 @@
 ## 1. Autentisering og autorisasjon
 
 ### Krav
+
 - JWT-basert autentisering (access + refresh token)
 - Roller: `PLAYER`, `ADMIN`
 - Innlogget bruker hentes via token
@@ -19,25 +20,26 @@
 
 ### Endepunkter
 
-| Metode | Sti | Beskrivelse | Roller |
-|--------|-----|-------------|--------|
-| POST | `/api/auth/register` | Opprett ny spillerkonto | Alle |
-| POST | `/api/auth/login` | Innlogging, returnerer JWT-par | Alle |
-| POST | `/api/auth/refresh` | Forny access token | Alle |
-| POST | `/api/auth/logout` | Invalider refresh token | Alle |
-| GET | `/api/auth/me` | Returnerer innlogget brukerprofil | Alle |
+| Metode | Sti                  | Beskrivelse                       | Roller |
+| ------ | -------------------- | --------------------------------- | ------ |
+| POST   | `/api/auth/register` | Opprett ny spillerkonto           | Alle   |
+| POST   | `/api/auth/login`    | Innlogging, returnerer JWT-par    | Alle   |
+| POST   | `/api/auth/refresh`  | Forny access token                | Alle   |
+| POST   | `/api/auth/logout`   | Invalider refresh token           | Alle   |
+| GET    | `/api/auth/me`       | Returnerer innlogget brukerprofil | Alle   |
 
 ### Respons `POST /api/auth/login`
+
 ```json
 {
-  "accessToken": "eyJ...",
-  "refreshToken": "eyJ...",
-  "user": {
-    "id": 17,
-    "username": "edvard",
-    "email": "edvard@example.com",
-    "role": "PLAYER"
-  }
+	"accessToken": "eyJ...",
+	"refreshToken": "eyJ...",
+	"user": {
+		"id": 17,
+		"username": "edvard",
+		"email": "edvard@example.com",
+		"role": "PLAYER"
+	}
 }
 ```
 
@@ -46,6 +48,7 @@
 ## 2. Brukerprofil
 
 ### Krav
+
 - CRUD for egen profil (begrenset felter)
 - Admin kan hente/liste alle brukere
 - `xp` skal legges til i `User`-objektet
@@ -53,25 +56,26 @@
 
 ### Endepunkter
 
-| Metode | Sti | Beskrivelse | Roller |
-|--------|-----|-------------|--------|
-| GET | `/api/users/me` | Hent egen profil | PLAYER, ADMIN |
-| PUT | `/api/users/me` | Oppdater egen profil (visningsnavn, e-post) | PLAYER, ADMIN |
-| GET | `/api/users/{id}` | Hent bruker på id | ADMIN |
-| GET | `/api/users` | Liste brukere (paginert) | ADMIN |
-| PATCH | `/api/users/{id}/status` | Endre status | ADMIN |
+| Metode | Sti                      | Beskrivelse                                 | Roller        |
+| ------ | ------------------------ | ------------------------------------------- | ------------- |
+| GET    | `/api/users/me`          | Hent egen profil                            | PLAYER, ADMIN |
+| PUT    | `/api/users/me`          | Oppdater egen profil (visningsnavn, e-post) | PLAYER, ADMIN |
+| GET    | `/api/users/{id}`        | Hent bruker på id                           | ADMIN         |
+| GET    | `/api/users`             | Liste brukere (paginert)                    | ADMIN         |
+| PATCH  | `/api/users/{id}/status` | Endre status                                | ADMIN         |
 
 ### Respons `GET /api/users/me`
+
 ```json
 {
-  "id": 17,
-  "username": "edvard",
-  "email": "edvard@example.com",
-  "role": "PLAYER",
-  "status": "ACTIVE",
-  "xp": 1240,
-  "level": 6,
-  "createdAt": "2026-02-01T10:20:00Z"
+	"id": 17,
+	"username": "edvard",
+	"email": "edvard@example.com",
+	"role": "PLAYER",
+	"status": "ACTIVE",
+	"xp": 1240,
+	"level": 6,
+	"createdAt": "2026-02-01T10:20:00Z"
 }
 ```
 
@@ -80,6 +84,7 @@
 ## 3. Progresjon (XP og nivå)
 
 ### Krav
+
 - Spillet er lineært: all progresjon styres av XP
 - XP tildeles via fullførte oppdrag/kapitler
 - Nivå beregnes basert på XP terskler
@@ -87,43 +92,139 @@
 
 ### Endepunkter
 
-| Metode | Sti | Beskrivelse | Roller |
-|--------|-----|-------------|--------|
-| GET | `/api/progression/me` | Hent egen progresjon (xp, level, neste nivå) | PLAYER, ADMIN |
-| GET | `/api/progression/me/history` | Hent XP-historikk | PLAYER, ADMIN |
-| POST | `/api/progression/me/events` | Registrer progresjonshendelse | PLAYER, ADMIN |
-| POST | `/api/admin/users/{id}/xp` | Legg til/trekk fra XP manuelt | ADMIN |
+| Metode | Sti                           | Beskrivelse                                  | Roller        |
+| ------ | ----------------------------- | -------------------------------------------- | ------------- |
+| GET    | `/api/progression/me`         | Hent egen progresjon (xp, level, neste nivå) | PLAYER, ADMIN |
+| GET    | `/api/progression/me/history` | Hent XP-historikk                            | PLAYER, ADMIN |
+| POST   | `/api/progression/me/events`  | Registrer progresjonshendelse                | PLAYER, ADMIN |
+| POST   | `/api/admin/users/{id}/xp`    | Legg til/trekk fra XP manuelt                | ADMIN         |
 
 ### Request `POST /api/progression/me/events`
+
 ```json
 {
-  "source": "QUEST_COMPLETED",
-  "sourceId": "quest-12",
-  "xpDelta": 150,
-  "metadata": {
-    "chapter": 2,
-    "difficulty": "NORMAL"
-  }
+	"source": "QUEST_COMPLETED",
+	"sourceId": "quest-12",
+	"xpDelta": 150,
+	"metadata": {
+		"chapter": 2,
+		"difficulty": "NORMAL"
+	}
 }
 ```
 
 ### Respons `GET /api/progression/me`
+
 ```json
 {
-  "userId": 17,
-  "xp": 1240,
-  "level": 6,
-  "currentLevelMinXp": 1100,
-  "nextLevelXp": 1400,
-  "xpToNextLevel": 160
+	"userId": 17,
+	"xp": 1240,
+	"level": 6,
+	"currentLevelMinXp": 1100,
+	"nextLevelXp": 1400,
+	"xpToNextLevel": 160
 }
 ```
 
 ---
 
-## 4. Lineær spillflyt (kapitler og oppdrag)
+## 4. Journal og notater
 
 ### Krav
+
+- Hver bruker har en journal (dagbok) som logges automatisk ved nivå/oppdrag-gjennomføring
+- Hardkodede oppfølgings-innslag for hver progresjonshendelse
+- Bruker kan legge til egne personlige notater til journalen
+- Egne notater lagres i databasen og kan redigeres/slettes
+- Journal viser både automatiske og brukerskrevne innslag i kronologisk rekkefølge
+
+### Endepunkter
+
+| Metode | Sti                                 | Beskrivelse                               | Roller        |
+| ------ | ----------------------------------- | ----------------------------------------- | ------------- |
+| GET    | `/api/journal/me`                   | Hent hele journalen (auto + egne notater) | PLAYER, ADMIN |
+| POST   | `/api/journal/me/entries`           | Legg til eget notat                       | PLAYER, ADMIN |
+| PUT    | `/api/journal/me/entries/{entryId}` | Rediger eget notat                        | PLAYER, ADMIN |
+| DELETE | `/api/journal/me/entries/{entryId}` | Slett eget notat                          | PLAYER, ADMIN |
+
+### Respons `GET /api/journal/me`
+
+```json
+{
+	"userId": 17,
+	"entries": [
+		{
+			"id": "journal-1",
+			"type": "AUTO",
+			"title": "Kapittel 1 avsluttet",
+			"message": "Du fullførte Kapittel 1: «Det store oppdraget». Du mottok 300 XP og nådde nivå 2.",
+			"source": "CHAPTER_COMPLETED",
+			"sourceId": "chapter-1",
+			"createdAt": "2026-04-10T14:20:00Z",
+			"canEdit": false,
+			"canDelete": false
+		},
+		{
+			"id": "journal-2",
+			"type": "USER",
+			"title": "Min første tanke",
+			"content": "Dette var veldig gøy! Jeg liker hvordan karakteren beveger seg.",
+			"createdAt": "2026-04-10T14:25:00Z",
+			"updatedAt": "2026-04-10T15:00:00Z",
+			"canEdit": true,
+			"canDelete": true
+		},
+		{
+			"id": "journal-3",
+			"type": "AUTO",
+			"title": "Oppdrag fullført",
+			"message": "Du fullførte oppdrag «Redde prinsen». Hatt «Gullhelmet» låst opp!",
+			"source": "QUEST_COMPLETED",
+			"sourceId": "quest-5",
+			"createdAt": "2026-04-11T10:15:00Z",
+			"canEdit": false,
+			"canDelete": false
+		}
+	]
+}
+```
+
+### Request `POST /api/journal/me/entries`
+
+```json
+{
+	"title": "Voldsomme kamper i dag",
+	"content": "Jeg klarte å beseire bossen på første forsøk! Veldig stolt av meg selv."
+}
+```
+
+### Request `PUT /api/journal/me/entries/{entryId}`
+
+```json
+{
+	"title": "Voldsomme kamper i dag",
+	"content": "Jeg klarte å beseire bossen på første forsøk! Veldig stolt av meg selv. Må trene mer på dodging."
+}
+```
+
+### Auto-genererte innslag (eksempler)
+
+Systemet skal generere hardkodet innslag ved:
+
+- `CHAPTER_COMPLETED` — kapittel fullført
+- `QUEST_COMPLETED` — oppdrag fullført (med reward-detaljer)
+- `LEVEL_UP` — nivå-oppnådd
+- `ITEM_UNLOCKED` — kosmetikk-item låst opp
+- `ACHIEVEMENT_UNLOCKED` — prestasjoner låst opp (valgfritt)
+
+Format: `"Du fullførte {navn}. Du mottok {xp} XP og nådde nivå {level}."`
+
+---
+
+## 5. Lineær spillflyt (kapitler og oppdrag)
+
+### Krav
+
 - Bruker kan kun spille oppdrag i riktig rekkefølge
 - Neste kapittel/opdrag låses opp ved XP-krav
 - Backend verifiserer at oppdrag kan startes/fullføres
@@ -131,31 +232,33 @@
 
 ### Endepunkter
 
-| Metode | Sti | Beskrivelse | Roller |
-|--------|-----|-------------|--------|
-| GET | `/api/campaign/me` | Hent nåværende kapittel, oppdrag og låser | PLAYER, ADMIN |
-| GET | `/api/campaign/chapters` | Hent alle kapitler med krav | PLAYER, ADMIN |
-| POST | `/api/campaign/quests/{questId}/start` | Start oppdrag hvis krav er oppfylt | PLAYER, ADMIN |
-| POST | `/api/campaign/quests/{questId}/complete` | Fullfør oppdrag og tildel XP | PLAYER, ADMIN |
+| Metode | Sti                                       | Beskrivelse                               | Roller        |
+| ------ | ----------------------------------------- | ----------------------------------------- | ------------- |
+| GET    | `/api/campaign/me`                        | Hent nåværende kapittel, oppdrag og låser | PLAYER, ADMIN |
+| GET    | `/api/campaign/chapters`                  | Hent alle kapitler med krav               | PLAYER, ADMIN |
+| POST   | `/api/campaign/quests/{questId}/start`    | Start oppdrag hvis krav er oppfylt        | PLAYER, ADMIN |
+| POST   | `/api/campaign/quests/{questId}/complete` | Fullfør oppdrag og tildel XP              | PLAYER, ADMIN |
 
 ### Respons `GET /api/campaign/me`
+
 ```json
 {
-  "currentChapter": 2,
-  "currentQuestId": "quest-12",
-  "unlockedQuestIds": ["quest-10", "quest-11", "quest-12"],
-  "nextLockedQuest": {
-    "id": "quest-13",
-    "requiredXp": 1300
-  }
+	"currentChapter": 2,
+	"currentQuestId": "quest-12",
+	"unlockedQuestIds": ["quest-10", "quest-11", "quest-12"],
+	"nextLockedQuest": {
+		"id": "quest-13",
+		"requiredXp": 1300
+	}
 }
 ```
 
 ---
 
-## 5. Avatar og kosmetikk
+## 6. Avatar og kosmetikk
 
 ### Krav
+
 - Bruker kan endre avatar med følgende kategorier:
   - `HAT`
   - `SKIN_TONE`
@@ -168,39 +271,42 @@
 
 ### Endepunkter
 
-| Metode | Sti | Beskrivelse | Roller |
-|--------|-----|-------------|--------|
-| GET | `/api/avatar/me` | Hent aktiv avatar-konfigurasjon | PLAYER, ADMIN |
-| PUT | `/api/avatar/me` | Sett hele avatar-oppsettet | PLAYER, ADMIN |
-| PATCH | `/api/avatar/me/equip` | Equip item i kategori | PLAYER, ADMIN |
-| GET | `/api/avatar/items` | Hent alle kosmetikk-items (masterdata) | PLAYER, ADMIN |
-| GET | `/api/avatar/inventory/me` | Hent spillerens eide kosmetikk-items | PLAYER, ADMIN |
-| POST | `/api/avatar/inventory/me/unlock` | Lås opp item (XP/belønning/admin) | PLAYER, ADMIN |
+| Metode | Sti                               | Beskrivelse                            | Roller        |
+| ------ | --------------------------------- | -------------------------------------- | ------------- |
+| GET    | `/api/avatar/me`                  | Hent aktiv avatar-konfigurasjon        | PLAYER, ADMIN |
+| PUT    | `/api/avatar/me`                  | Sett hele avatar-oppsettet             | PLAYER, ADMIN |
+| PATCH  | `/api/avatar/me/equip`            | Equip item i kategori                  | PLAYER, ADMIN |
+| GET    | `/api/avatar/items`               | Hent alle kosmetikk-items (masterdata) | PLAYER, ADMIN |
+| GET    | `/api/avatar/inventory/me`        | Hent spillerens eide kosmetikk-items   | PLAYER, ADMIN |
+| POST   | `/api/avatar/inventory/me/unlock` | Lås opp item (XP/belønning/admin)      | PLAYER, ADMIN |
 
 ### Request `PATCH /api/avatar/me/equip`
+
 ```json
 {
-  "slot": "HAT",
-  "itemCode": "HAT_WIZARD_BLUE"
+	"slot": "HAT",
+	"itemCode": "HAT_WIZARD_BLUE"
 }
 ```
 
 ### Respons `GET /api/avatar/me`
+
 ```json
 {
-  "userId": 17,
-  "equipped": {
-    "hat": "HAT_WIZARD_BLUE",
-    "skinTone": "SKIN_TONE_MEDIUM",
-    "jacket": "JACKET_LEATHER_BLACK",
-    "pants": "PANTS_DENIM_DARK",
-    "shoes": "SHOES_SNEAKER_WHITE"
-  },
-  "updatedAt": "2026-04-14T12:20:00Z"
+	"userId": 17,
+	"equipped": {
+		"hat": "HAT_WIZARD_BLUE",
+		"skinTone": "SKIN_TONE_MEDIUM",
+		"jacket": "JACKET_LEATHER_BLACK",
+		"pants": "PANTS_DENIM_DARK",
+		"shoes": "SHOES_SNEAKER_WHITE"
+	},
+	"updatedAt": "2026-04-14T12:20:00Z"
 }
 ```
 
 ### Enums (minimum)
+
 ```text
 AvatarSlot = HAT | SKIN_TONE | JACKET | PANTS | SHOES
 UnlockSource = QUEST_REWARD | LEVEL_REWARD | ADMIN_GRANT | SHOP_PURCHASE
@@ -209,80 +315,87 @@ ItemRarity = COMMON | RARE | EPIC | LEGENDARY
 
 ---
 
-## 6. Butikk og opplåsing (valgfritt, men anbefalt)
+## 7. Butikk og opplåsing (valgfritt, men anbefalt)
 
 ### Krav
+
 - Kosmetikk kan låses opp via XP-krav eller valuta
 - Backend validerer krav før kjøp/opplåsing
 - Kjøp logges i historikk
 
 ### Endepunkter
 
-| Metode | Sti | Beskrivelse | Roller |
-|--------|-----|-------------|--------|
-| GET | `/api/shop/items` | Hent tilgjengelige items i butikk | PLAYER, ADMIN |
-| POST | `/api/shop/purchase` | Kjøp item | PLAYER, ADMIN |
-| GET | `/api/shop/purchases/me` | Kjøpshistorikk | PLAYER, ADMIN |
+| Metode | Sti                      | Beskrivelse                       | Roller        |
+| ------ | ------------------------ | --------------------------------- | ------------- |
+| GET    | `/api/shop/items`        | Hent tilgjengelige items i butikk | PLAYER, ADMIN |
+| POST   | `/api/shop/purchase`     | Kjøp item                         | PLAYER, ADMIN |
+| GET    | `/api/shop/purchases/me` | Kjøpshistorikk                    | PLAYER, ADMIN |
 
 ### Request `POST /api/shop/purchase`
+
 ```json
 {
-  "itemCode": "JACKET_LEATHER_BLACK",
-  "currency": "XP"
+	"itemCode": "JACKET_LEATHER_BLACK",
+	"currency": "XP"
 }
 ```
 
 ---
 
-## 7. Leaderboard og sosial oversikt
+## 8. Leaderboard og sosial oversikt
 
 ### Krav
+
 - Rangering basert på XP
 - Topp-liste med paginering
 - Egen plassering skal kunne hentes separat
 
 ### Endepunkter
 
-| Metode | Sti | Beskrivelse | Roller |
-|--------|-----|-------------|--------|
-| GET | `/api/leaderboard` | Topp spillere etter XP | PLAYER, ADMIN |
-| GET | `/api/leaderboard/me` | Egen plassering | PLAYER, ADMIN |
+| Metode | Sti                   | Beskrivelse            | Roller        |
+| ------ | --------------------- | ---------------------- | ------------- |
+| GET    | `/api/leaderboard`    | Topp spillere etter XP | PLAYER, ADMIN |
+| GET    | `/api/leaderboard/me` | Egen plassering        | PLAYER, ADMIN |
 
 ### Query-parametre `GET /api/leaderboard`
+
 - `page` / `size`
 - `season` (valgfri)
 
 ---
 
-## 8. Admin-innhold og konfig
+## 9. Admin-innhold og konfig
 
 ### Krav
+
 - Admin kan administrere XP-terskler
 - Admin kan administrere kapittel/oppdrag og rewards
 - Endringer skal versjoneres
 
 ### Endepunkter
 
-| Metode | Sti | Beskrivelse | Roller |
-|--------|-----|-------------|--------|
-| GET | `/api/admin/config/xp-levels` | Hent nivå-terskler | ADMIN |
-| PUT | `/api/admin/config/xp-levels` | Oppdater nivå-terskler | ADMIN |
-| POST | `/api/admin/campaign/chapters` | Opprett kapittel | ADMIN |
-| PUT | `/api/admin/campaign/chapters/{id}` | Oppdater kapittel | ADMIN |
-| POST | `/api/admin/campaign/quests` | Opprett oppdrag | ADMIN |
-| PUT | `/api/admin/campaign/quests/{id}` | Oppdater oppdrag | ADMIN |
+| Metode | Sti                                 | Beskrivelse            | Roller |
+| ------ | ----------------------------------- | ---------------------- | ------ |
+| GET    | `/api/admin/config/xp-levels`       | Hent nivå-terskler     | ADMIN  |
+| PUT    | `/api/admin/config/xp-levels`       | Oppdater nivå-terskler | ADMIN  |
+| POST   | `/api/admin/campaign/chapters`      | Opprett kapittel       | ADMIN  |
+| PUT    | `/api/admin/campaign/chapters/{id}` | Oppdater kapittel      | ADMIN  |
+| POST   | `/api/admin/campaign/quests`        | Opprett oppdrag        | ADMIN  |
+| PUT    | `/api/admin/campaign/quests/{id}`   | Oppdater oppdrag       | ADMIN  |
 
 ---
 
 ## Tverrgående krav
 
 ### Alle endepunkter
+
 - JWT i `Authorization: Bearer <token>` header
 - Standard feilrespons: `{ "error": "KODE", "message": "Beskrivelse" }`
 - HTTP statuskoder: 200, 201, 400, 401, 403, 404, 409, 500
 - Paginering på liste-endepunkter: `?page=0&size=20`
 
 ### Domene- og datakrav
+
 - `User` må utvides med minst: `xp`, `level`, `status`
 - Avatar-oppsett lagres med enums per slot (hatt, hudfarge, jakke, bukse, sko)
 - Spillprogresjon må være deterministisk og lineær
@@ -290,12 +403,14 @@ ItemRarity = COMMON | RARE | EPIC | LEGENDARY
 - Tidsstempler på entiteter: `createdAt`, `updatedAt`
 
 ### Sikkerhet
+
 - Input-validering på alle request DTO-er (Spring Validation)
 - Rate limiting på auth og progresjonsendepunkter
 - Beskyttelse mot manipulering av XP/events (server-side validering)
 - CORS konfigurert for frontend-domene
 
 ### Testing (minimum)
+
 - Integrasjonstester for auth-flyt
 - Integrasjonstester for lineær progresjon (inkl. blokkering ved feil rekkefølge)
 - Tester for XP-beregning og level-up

@@ -4,17 +4,88 @@ import { useRouter } from 'vue-router'
 
 import feideLogoUrl from '@/assets/Feide_idY2p4BuwR_1.svg'
 import norwayFlagUrl from '@/assets/norway.svg'
+import { getLandingPath, type AuthSession } from '@/lib/auth'
+import { API_BASE_URL } from '@/lib/api'
+import { useAuthStore } from '@/stores/auth'
 
-const schools = ['NTNU', 'Universitetet i Oslo', 'OsloMet', 'BI'] as const
+interface SchoolOption {
+  id: number
+  name: string
+  emailSuffix: string
+}
 
-const username = ref('eksempelbruker')
-const password = ref('passordpassord')
-const selectedSchool = ref<(typeof schools)[number]>('NTNU')
+const schools = ref<SchoolOption[]>([])
+const loginUsername = ref('')
+const password = ref('Password123!')
+const selectedSchoolId = ref<number | null>(null)
 const isSchoolModalOpen = ref(false)
+const isFetchingSchools = ref(false)
+const isSubmitting = ref(false)
+const loadError = ref('')
+const submitError = ref('')
 const router = useRouter()
+const authStore = useAuthStore()
 
-function handleSubmit() {
-  router.push({ name: 'dummy' })
+async function loadSchools() {
+  isFetchingSchools.value = true
+  loadError.value = ''
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/schools`)
+    if (!response.ok) {
+      throw new Error('Kunne ikke laste skoler.')
+    }
+
+    const data = (await response.json()) as SchoolOption[]
+    schools.value = data
+    selectedSchoolId.value = data[0]?.id ?? null
+  } catch (error) {
+    loadError.value = error instanceof Error ? error.message : 'Kunne ikke laste skoler.'
+  } finally {
+    isFetchingSchools.value = false
+  }
+}
+
+async function handleSubmit() {
+  if (selectedSchoolId.value === null || isSubmitting.value) {
+    return
+  }
+
+  const selectedSchool = getSelectedSchool()
+  if (!selectedSchool) {
+    submitError.value = 'Velg en skole før du logger inn.'
+    return
+  }
+
+  isSubmitting.value = true
+  submitError.value = ''
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: `${loginUsername.value.trim()}${selectedSchool.emailSuffix}`,
+        schoolId: selectedSchoolId.value,
+        password: password.value,
+      }),
+    })
+
+    if (!response.ok) {
+      const message = await response.text()
+      throw new Error(message || 'Innlogging mislyktes.')
+    }
+
+    const session = (await response.json()) as AuthSession
+    authStore.setSession(session)
+    await router.push(getLandingPath(session.role))
+  } catch {
+    submitError.value = 'Innlogging mislyktes.'
+  } finally {
+    isSubmitting.value = false
+  }
 }
 
 function openSchoolModal() {
@@ -25,9 +96,18 @@ function closeSchoolModal() {
   isSchoolModalOpen.value = false
 }
 
-function selectSchool(school: (typeof schools)[number]) {
-  selectedSchool.value = school
+function selectSchool(schoolId: number) {
+  selectedSchoolId.value = schoolId
   closeSchoolModal()
+}
+
+function getSelectedSchool() {
+  return schools.value.find((school) => school.id === selectedSchoolId.value) ?? null
+}
+
+function getSchoolBadgeLabel() {
+  const school = getSelectedSchool()
+  return school ? school.name.slice(0, 2).toUpperCase() : '--'
 }
 
 function handleWindowKeydown(event: KeyboardEvent) {
@@ -38,6 +118,7 @@ function handleWindowKeydown(event: KeyboardEvent) {
 
 onMounted(() => {
   window.addEventListener('keydown', handleWindowKeydown)
+  void loadSchools()
 })
 
 onBeforeUnmount(() => {
@@ -97,15 +178,16 @@ onBeforeUnmount(() => {
                 class="inline-flex h-[52px] w-[52px] items-center justify-center rounded-2xl bg-linear-to-br from-[#dce9fb] to-[#9ec2f3] text-[0.95rem] font-extrabold tracking-[0.04em] text-[#214f9f]"
                 aria-hidden="true"
               >
-                <span>{{ selectedSchool.slice(0, 2).toUpperCase() }}</span>
+                <span>{{ getSchoolBadgeLabel() }}</span>
               </div>
               <div class="grid gap-1">
                 <p class="m-0 text-[1.28rem] leading-[1.2] font-semibold">
-                  {{ selectedSchool }}
+                  {{ getSelectedSchool()?.name ?? 'Laster skole...' }}
                 </p>
                 <button
                   class="w-fit border-0 bg-transparent p-0 text-[0.98rem] underline decoration-[1.5px] underline-offset-[3px]"
                   type="button"
+                  :disabled="isFetchingSchools || schools.length === 0"
                   @click="openSchoolModal"
                 >
                   Endre tilhørighet
@@ -120,9 +202,10 @@ onBeforeUnmount(() => {
             <label class="grid gap-2">
               <span class="text-base font-bold">Brukernavn</span>
               <input
-                v-model="username"
+                v-model="loginUsername"
                 autocomplete="username"
                 class="h-[72px] w-full rounded-none border-2 border-[#7b88bd] bg-white px-[18px] text-[1.15rem] font-semibold text-[#111111] outline-none transition-colors focus:border-[#4f5ea8] max-sm:h-16"
+                placeholder="Skriv Feide-brukernavn"
                 type="text"
               />
             </label>
@@ -137,6 +220,14 @@ onBeforeUnmount(() => {
               />
             </label>
 
+            <p v-if="loadError" class="m-0 text-sm font-medium text-[#b42318]">
+              {{ loadError }}
+            </p>
+
+            <p v-if="submitError" class="m-0 text-sm font-medium text-[#b42318]">
+              {{ submitError }}
+            </p>
+
             <a
               class="w-fit text-[0.98rem] underline decoration-[1.5px] underline-offset-[3px]"
               href="/"
@@ -148,8 +239,9 @@ onBeforeUnmount(() => {
             <button
               class="h-[74px] border-0 bg-[#99bff1] text-[1.2rem] font-medium tracking-[-0.02em] text-[#111111] max-sm:h-16"
               type="submit"
+              :disabled="isSubmitting || isFetchingSchools || selectedSchoolId === null"
             >
-              Logg inn
+              {{ isSubmitting ? 'Logger inn...' : 'Logg inn' }}
             </button>
           </form>
 
@@ -229,18 +321,21 @@ onBeforeUnmount(() => {
         <div class="grid gap-[10px]" role="list">
           <button
             v-for="school in schools"
-            :key="school"
+            :key="school.id"
             class="flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-[14px] text-left text-base font-semibold text-[#1a2233]"
             :class="
-              school === selectedSchool
+              school.id === selectedSchoolId
                 ? 'border-[#84a6df] bg-[#eef4fe]'
                 : 'border-[#d7e0ec] bg-white'
             "
             type="button"
-            @click="selectSchool(school)"
+            @click="selectSchool(school.id)"
           >
-            <span>{{ school }}</span>
-            <span v-if="school === selectedSchool" class="text-[0.86rem] font-bold text-[#2a59b1]">
+            <span>{{ school.name }}</span>
+            <span
+              v-if="school.id === selectedSchoolId"
+              class="text-[0.86rem] font-bold text-[#2a59b1]"
+            >
               Valgt
             </span>
           </button>

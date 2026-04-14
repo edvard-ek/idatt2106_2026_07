@@ -1,9 +1,12 @@
 package edu.ntnu.idi.idatt.core.auth.service;
 
 import edu.ntnu.idi.idatt.core.auth.dto.AuthResponse;
+import edu.ntnu.idi.idatt.core.auth.enums.AuthRole;
+import edu.ntnu.idi.idatt.core.auth.dto.AuthUserResponse;
 import edu.ntnu.idi.idatt.core.auth.dto.LoginRequest;
 import edu.ntnu.idi.idatt.core.auth.dto.RefreshTokenRequest;
 import edu.ntnu.idi.idatt.core.security.JwtService;
+import edu.ntnu.idi.idatt.core.school.entity.School;
 import edu.ntnu.idi.idatt.core.user.entity.Pupil;
 import edu.ntnu.idi.idatt.core.user.entity.Teacher;
 import edu.ntnu.idi.idatt.core.user.entity.User;
@@ -43,15 +46,16 @@ public class AuthService {
         }
 
         String subject = user.getId().toString();
+        Long schoolId = extractSchoolId(user);
         Map<String, Object> claims = Map.of(
-                "email", user.getEmail(),
-                "schoolId", request.schoolId()
+                "username", user.getUsername(),
+                "schoolId", schoolId
         );
 
         String accessToken = jwtService.generateAccessToken(subject, claims);
         String refreshToken = jwtService.generateRefreshToken(subject, claims);
 
-        return new AuthResponse(accessToken, refreshToken);
+        return buildAuthResponse(user, accessToken, refreshToken);
     }
 
     /**
@@ -74,12 +78,64 @@ public class AuthService {
 
         Long schoolId = extractSchoolId(user);
         Map<String, Object> claims = Map.of(
-                "email", user.getEmail(),
+                "username", user.getUsername(),
                 "schoolId", schoolId
         );
         String accessToken = jwtService.generateAccessToken(subject, claims);
 
-        return new AuthResponse(accessToken, refreshToken);
+        return buildAuthResponse(user, accessToken, refreshToken);
+    }
+
+    private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
+        return new AuthResponse(
+                accessToken,
+                refreshToken,
+                extractRole(user),
+                buildUserResponse(user)
+        );
+    }
+
+    private AuthRole extractRole(User user) {
+        if (user instanceof Teacher) {
+            return AuthRole.TEACHER;
+        }
+
+        if (user instanceof Pupil) {
+            return AuthRole.PUPIL;
+        }
+
+        throw new IllegalArgumentException("Unsupported user type for authentication.");
+    }
+
+    private AuthUserResponse buildUserResponse(User user) {
+        if (user instanceof Teacher teacher) {
+            School school = teacher.getSchool();
+            return new AuthUserResponse(
+                    teacher.getId(),
+                    teacher.getUsername(),
+                    teacher.getFirstName(),
+                    teacher.getLastName(),
+                    school.getId(),
+                    school.getName(),
+                    null,
+                    null
+            );
+        }
+
+        if (user instanceof Pupil pupil) {
+            return new AuthUserResponse(
+                    pupil.getId(),
+                    pupil.getUsername(),
+                    pupil.getFirstName(),
+                    pupil.getLastName(),
+                    pupil.getClassroom().getSchool().getId(),
+                    pupil.getClassroom().getSchool().getName(),
+                    pupil.getClassroom().getId(),
+                    pupil.getClassroom().getName()
+            );
+        }
+
+        throw new IllegalArgumentException("Unsupported user type for authentication.");
     }
 
     private boolean belongsToSchool(User user, Long schoolId) {

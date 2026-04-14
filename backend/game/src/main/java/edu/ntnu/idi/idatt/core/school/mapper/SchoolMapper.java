@@ -15,6 +15,7 @@ public class SchoolMapper {
     SchoolDTO dto = new SchoolDTO();
     dto.setId(entity.getId());
     dto.setName(entity.getName());
+    dto.setEmailSuffix(entity.getEmailSuffix());
     if (entity.getClassrooms() != null) {
       dto.setClassroomIds(
           entity.getClassrooms().stream().map(Classroom::getId).collect(Collectors.toList()));

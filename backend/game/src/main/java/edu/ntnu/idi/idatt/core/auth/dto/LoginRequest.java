@@ -14,7 +14,7 @@ public record LoginRequest(
 
         @NotNull(message = "School id is required")
         Long schoolId,
-        
+
         @NotBlank(message = "Password is required")
         String password
 ) {

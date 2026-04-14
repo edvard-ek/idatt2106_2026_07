@@ -28,6 +28,10 @@ public class School {
   @Column(nullable = false)
   private String name;
 
+  @NotBlank(message = "Email suffix is required")
+  @Column(nullable = false)
+  private String emailSuffix;
+
   @OneToMany(mappedBy = "school", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Classroom> classrooms = new ArrayList<>();
 }

@@ -30,7 +30,8 @@ public class SecurityConfig {
     // Adjust these later when  application adds/removes unauthenticated routes.
     private static final String[] PUBLIC_ENDPOINTS = {
             "/auth/**",
-            "/error"
+            "/error",
+            "/h2-console/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;

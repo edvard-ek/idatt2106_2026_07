@@ -9,10 +9,8 @@ import edu.ntnu.idi.idatt.core.avatar.dto.AvatarItemDTO;
 import edu.ntnu.idi.idatt.core.avatar.dto.UpdateAvatarRequest;
 import edu.ntnu.idi.idatt.core.avatar.entity.AvatarSlot;
 import edu.ntnu.idi.idatt.core.avatar.repository.AvatarRepository;
-import edu.ntnu.idi.idatt.core.classroom.entity.Classroom;
-import edu.ntnu.idi.idatt.core.classroom.repository.ClassroomRepository;
-import edu.ntnu.idi.idatt.core.user.entity.Pupil;
-import edu.ntnu.idi.idatt.core.user.repository.PupilRepository;
+import edu.ntnu.idi.idatt.core.user.entity.User;
+import edu.ntnu.idi.idatt.core.user.repository.UserRepository;
 import edu.ntnu.idi.idatt.game.GameApplication;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -35,17 +33,14 @@ class AvatarServiceIntegrationTest {
   private AvatarRepository avatarRepository;
 
   @Autowired
-  private PupilRepository pupilRepository;
-
-  @Autowired
-  private ClassroomRepository classroomRepository;
+  private UserRepository userRepository;
 
   /**
    * Tests that an avatar is created for a user.
    */
   @Test
   void saveOrUpdateCreatesAvatarForUser() {
-    Long userId = createTestPupil().getId();
+    Long userId = createTestUser().getId();
     long initialCount = avatarRepository.count();
     AvatarDTO avatar = avatarService.saveOrUpdate(userId, validRequest());
 
@@ -60,7 +55,7 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void saveOrUpdateUpdatesExistingAvatar() {
-    Long userId = createTestPupil().getId();
+    Long userId = createTestUser().getId();
     AvatarDTO created = avatarService.saveOrUpdate(userId, validRequest());
     long countAfterCreate = avatarRepository.count();
     UpdateAvatarRequest updatedRequest = new UpdateAvatarRequest(
@@ -80,7 +75,7 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void findByUserIdReturnsExistingAvatar() {
-    Long userId = createTestPupil().getId();
+    Long userId = createTestUser().getId();
     AvatarDTO created = avatarService.saveOrUpdate(userId, validRequest());
 
     AvatarDTO found = avatarService.findByUserId(userId);
@@ -95,7 +90,7 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void findByUserIdThrowsWhenAvatarDoesNotExist() {
-    Long userId = createTestPupil().getId();
+    Long userId = createTestUser().getId();
 
     assertThrows(EntityNotFoundException.class, () -> avatarService.findByUserId(userId));
   }
@@ -105,7 +100,7 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void saveOrUpdateThrowsWhenAvatarItemDoesNotExist() {
-    Long userId = createTestPupil().getId();
+    Long userId = createTestUser().getId();
     UpdateAvatarRequest request = new UpdateAvatarRequest(
         999L, 3L, 5L, 7L, 9L, 11L, 13L, 15L
     );
@@ -118,7 +113,7 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void saveOrUpdateThrowsWhenAvatarItemBelongsToWrongSlot() {
-    Long userId = createTestPupil().getId();
+    Long userId = createTestUser().getId();
     UpdateAvatarRequest request = new UpdateAvatarRequest(
         3L, 4L, 5L, 7L, 9L, 11L, 13L, 15L
     );
@@ -144,19 +139,15 @@ class AvatarServiceIntegrationTest {
     );
   }
 
-  private Pupil createTestPupil() {
-    Classroom classroom = classroomRepository.findById(1L)
-        .orElseThrow(() -> new EntityNotFoundException("Classroom not found with id: 1"));
-
-    Pupil pupil = new Pupil();
+  private User createTestUser() {
+    User user = new User();
     String unique = String.valueOf(System.nanoTime());
-    pupil.setUsername("avatar-test-" + unique);
-    pupil.setEmail("avatar-test-" + unique + "@osloskolen.no");
-    pupil.setFirstName("Avatar");
-    pupil.setLastName("Test");
-    pupil.setPassword("encoded-password");
-    pupil.setClassroom(classroom);
+    user.setUsername("avatar-test-" + unique);
+    user.setEmail("avatar-test-" + unique + "@osloskolen.no");
+    user.setFirstName("Avatar");
+    user.setLastName("Test");
+    user.setPassword("encoded-password");
 
-    return pupilRepository.save(pupil);
+    return userRepository.save(user);
   }
 }

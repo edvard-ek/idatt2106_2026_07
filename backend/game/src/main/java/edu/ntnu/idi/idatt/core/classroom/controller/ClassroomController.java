@@ -28,19 +28,19 @@ public class ClassroomController {
   }
 
   @GetMapping("/{id}")
-  @PreAuthorize("hasRole('TEACHER')")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessClassroom(authentication, #id)")
   public ResponseEntity<ClassroomDTO> getById(@PathVariable Long id) {
     return ResponseEntity.ok(classroomService.findById(id));
   }
 
   @GetMapping("/school/{schoolId}")
-  @PreAuthorize("hasRole('TEACHER')")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessSchool(authentication, #schoolId)")
   public ResponseEntity<List<ClassroomDTO>> getBySchool(@PathVariable Long schoolId) {
     return ResponseEntity.ok(classroomService.findBySchoolId(schoolId));
   }
 
   @DeleteMapping("/{id}")
-  @PreAuthorize("hasRole('TEACHER')")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessClassroom(authentication, #id)")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     classroomService.deleteById(id);
     return ResponseEntity.noContent().build();

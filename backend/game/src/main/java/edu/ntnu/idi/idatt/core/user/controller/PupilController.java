@@ -16,22 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/pupils")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('TEACHER')")
 public class PupilController {
 
   private final PupilService pupilService;
 
   @GetMapping("/{id}")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessPupil(authentication, #id)")
   public ResponseEntity<PupilDTO> getById(@PathVariable Long id) {
     return ResponseEntity.ok(pupilService.findById(id));
   }
 
   @GetMapping("/classroom/{classroomId}")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessClassroom(authentication, #classroomId)")
   public ResponseEntity<List<PupilDTO>> getByClassroom(@PathVariable Long classroomId) {
     return ResponseEntity.ok(pupilService.findByClassroomId(classroomId));
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessPupil(authentication, #id)")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     pupilService.deleteById(id);
     return ResponseEntity.noContent().build();

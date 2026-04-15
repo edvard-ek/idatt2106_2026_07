@@ -32,7 +32,7 @@ public class SchoolController {
   }
 
   @DeleteMapping("/{id}")
-  @PreAuthorize("hasRole('TEACHER')")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessSchool(authentication, #id)")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     schoolService.deleteById(id);
     return ResponseEntity.noContent().build();

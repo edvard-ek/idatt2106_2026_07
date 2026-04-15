@@ -2,14 +2,20 @@ package edu.ntnu.idi.idatt.core.user.controller;
 
 import java.util.List;
 
+import edu.ntnu.idi.idatt.core.dto.ApiResponse;
 import edu.ntnu.idi.idatt.core.user.dto.PupilDTO;
+import edu.ntnu.idi.idatt.core.user.dto.XpUpdateRequest;
 import edu.ntnu.idi.idatt.core.user.service.PupilService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,8 +40,15 @@ public class PupilController {
 
   @DeleteMapping("/{id}")
   @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessPupil(authentication, #id)")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
+  public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
     pupilService.deleteById(id);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(ApiResponse.ok("Deleted"));
+  }
+
+  @PatchMapping("/{id}/xp")
+  public ResponseEntity<ApiResponse<Void>> updateXp(@PathVariable Long id,
+      @Valid @RequestBody XpUpdateRequest request) {
+    pupilService.updateXpById(id, request.xpGained());
+    return ResponseEntity.ok(ApiResponse.ok("Pupil xp updated"));
   }
 }

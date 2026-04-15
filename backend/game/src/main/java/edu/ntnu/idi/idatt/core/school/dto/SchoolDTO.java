@@ -2,13 +2,9 @@ package edu.ntnu.idi.idatt.core.school.dto;
 
 import java.util.List;
 
-import lombok.Data;
+public record SchoolDTO(Long id,
+        String name,
+        String emailSuffix,
+        List<Long> classroomIds) {
 
-@Data
-public class SchoolDTO {
-
-  private Long id;
-  private String name;
-  private String emailSuffix;
-  private List<Long> classroomIds;
 }

@@ -1,5 +1,6 @@
 package edu.ntnu.idi.idatt.core.avatar.controller;
 
+import edu.ntnu.idi.idatt.core.auth.dto.AuthenticatedUser;
 import edu.ntnu.idi.idatt.core.avatar.dto.AvatarDTO;
 import edu.ntnu.idi.idatt.core.avatar.dto.AvatarItemDTO;
 import edu.ntnu.idi.idatt.core.avatar.dto.UpdateAvatarRequest;
@@ -9,8 +10,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,8 +34,8 @@ public class AvatarController {
    * @return the avatar configuration
    */
   @GetMapping("/me")
-  public ResponseEntity<AvatarDTO> getMyAvatar() {
-    return ResponseEntity.ok(avatarService.findByUserId(getAuthenticatedUserId()));
+  public ResponseEntity<AvatarDTO> getMyAvatar(@AuthenticationPrincipal AuthenticatedUser user) {
+    return ResponseEntity.ok(avatarService.findByUserId(user.id()));
   }
 
   /**
@@ -66,23 +66,8 @@ public class AvatarController {
    * @return the saved avatar configuration
    */
   @PutMapping("/me")
-  public ResponseEntity<AvatarDTO> saveOrUpdateMyAvatar(
-      @Valid @RequestBody UpdateAvatarRequest request
-  ) {
-    return ResponseEntity.ok(avatarService.saveOrUpdate(getAuthenticatedUserId(), request));
-  }
-
-  private Long getAuthenticatedUserId() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-    if (authentication == null || authentication.getName() == null) {
-      throw new IllegalStateException("Authenticated user not found.");
-    }
-
-    try {
-      return Long.parseLong(authentication.getName());
-    } catch (NumberFormatException exception) {
-      throw new IllegalStateException("Authenticated user id is invalid.", exception);
-    }
+  public ResponseEntity<AvatarDTO> saveOrUpdateMyAvatar(@AuthenticationPrincipal AuthenticatedUser user,
+      @Valid @RequestBody UpdateAvatarRequest request) {
+    return ResponseEntity.ok(avatarService.saveOrUpdate(user.id(), request));
   }
 }

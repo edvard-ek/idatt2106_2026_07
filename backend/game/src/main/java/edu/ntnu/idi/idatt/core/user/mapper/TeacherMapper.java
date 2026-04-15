@@ -8,16 +8,13 @@ import org.springframework.stereotype.Component;
 public class TeacherMapper {
 
   public TeacherDTO toDTO(Teacher entity) {
-    TeacherDTO dto = new TeacherDTO();
-    dto.setId(entity.getId());
-    dto.setUsername(entity.getUsername());
-    dto.setEmail(entity.getEmail());
-    dto.setFirstName(entity.getFirstName());
-    dto.setLastName(entity.getLastName());
-    if (entity.getSchool() != null) {
-      dto.setSchoolId(entity.getSchool().getId());
-      dto.setSchoolName(entity.getSchool().getName());
-    }
-    return dto;
+    return new TeacherDTO(
+        entity.getId(),
+        entity.getUsername(),
+        entity.getEmail(),
+        entity.getFirstName(),
+        entity.getLastName(),
+        entity.getSchool().getId(),
+        entity.getSchool().getName());
   }
 }

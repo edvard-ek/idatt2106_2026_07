@@ -10,6 +10,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -40,4 +41,9 @@ public class User {
   @NotBlank(message = "Password is required")
   @Column(nullable = false)
   protected String password; // Encoded
+
+  @NotNull(message = "XP is required")
+  @Column(nullable = false)
+  protected int xp;
+
 }

@@ -72,7 +72,23 @@ VALUES (15, 'No Hat', 'HAT');
 INSERT INTO avatar_items (id, name, slot)
 VALUES (16, 'Red Cap', 'HAT');
 
+-- Avatar for alf
+INSERT INTO avatars (
+    id,
+    user_id,
+    gender_item_id,
+    eye_color_item_id,
+    skin_color_item_id,
+    hair_color_item_id,
+    hair_style_item_id,
+    upper_body_clothing_item_id,
+    lower_body_clothing_item_id,
+    hat_item_id
+)
+VALUES (1, 1, 1, 3, 5, 7, 9, 11, 13, 15);
+
 ALTER TABLE schools ALTER COLUMN id RESTART WITH 2;
 ALTER TABLE classrooms ALTER COLUMN id RESTART WITH 2;
 ALTER TABLE users ALTER COLUMN id RESTART WITH 3;
+ALTER TABLE avatars ALTER COLUMN id RESTART WITH 2;
 ALTER TABLE avatar_items ALTER COLUMN id RESTART WITH 17;

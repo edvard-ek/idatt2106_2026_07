@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 
-import BiggurReveal from '@/components/landing/BiggurReveal.vue'
+import BiggurReveal from './components/BiggurReveal.vue'
 
 const highlights = [
   {
@@ -125,20 +125,7 @@ const steps = [
             </a>
           </div>
 
-          <div class="mt-10 grid gap-3 sm:grid-cols-3">
-            <div class="rounded-[1.4rem] bg-white px-4 py-4 shadow-[0_8px_24px_rgba(34,34,40,0.05)]">
-              <p class="text-[0.72rem] font-black tracking-[0.14em] text-[#4158a6] uppercase">Login</p>
-              <p class="mt-2 text-sm leading-6 text-[#5f606b]">Trygg Feide-innlogging for både lærer og elev.</p>
-            </div>
-            <div class="rounded-[1.4rem] bg-[#fff3e3] px-4 py-4 shadow-[0_8px_24px_rgba(34,34,40,0.05)]">
-              <p class="text-[0.72rem] font-black tracking-[0.14em] text-[#ff8343] uppercase">Tone</p>
-              <p class="mt-2 text-sm leading-6 text-[#5f606b]">Mer karakter, mer energi, mindre skjema-følelse.</p>
-            </div>
-            <div class="rounded-[1.4rem] bg-[#edf8fb] px-4 py-4 shadow-[0_8px_24px_rgba(34,34,40,0.05)]">
-              <p class="text-[0.72rem] font-black tracking-[0.14em] text-[#179bae] uppercase">Classroom</p>
-              <p class="mt-2 text-sm leading-6 text-[#5f606b]">Laget for oppstart, aktivitet og samtale i samme time.</p>
-            </div>
-          </div>
+
         </div>
       </div>
 

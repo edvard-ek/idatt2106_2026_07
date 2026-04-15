@@ -35,12 +35,13 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void saveOrUpdateCreatesAvatarForUser() {
+    long initialCount = avatarRepository.count();
     AvatarDTO avatar = avatarService.saveOrUpdate(2L, validRequest());
 
     assertNotNull(avatar.id());
     assertEquals(2L, avatar.userId());
     assertEquals(1L, avatar.genderItemId());
-    assertEquals(1, avatarRepository.count());
+    assertEquals(initialCount + 1, avatarRepository.count());
   }
 
   /**
@@ -49,6 +50,7 @@ class AvatarServiceIntegrationTest {
   @Test
   void saveOrUpdateUpdatesExistingAvatar() {
     AvatarDTO created = avatarService.saveOrUpdate(2L, validRequest());
+    long countAfterCreate = avatarRepository.count();
     UpdateAvatarRequest updatedRequest = new UpdateAvatarRequest(
         2L, 4L, 6L, 8L, 10L, 12L, 14L, 16L
     );
@@ -58,7 +60,7 @@ class AvatarServiceIntegrationTest {
     assertEquals(created.id(), updated.id());
     assertEquals(2L, updated.genderItemId());
     assertEquals(16L, updated.hatItemId());
-    assertEquals(1, avatarRepository.count());
+    assertEquals(countAfterCreate, avatarRepository.count());
   }
 
   /**

@@ -7,7 +7,7 @@ const quickNotes = [
   {
     title: 'For elever',
     text: 'Et opplegg som føles som et oppdrag, med spor, valg og samarbeid.',
-    accent: 'bg-[#ffe978] text-[#111111] border-[#907247]/35',
+    accent: 'bg-[#ffb8aa] text-[#111111] border-[#a36a5d]/35',
     tape: 'bg-[#fff4c4]/90',
     tilt: 'rotate-[-1.2deg]',
   },

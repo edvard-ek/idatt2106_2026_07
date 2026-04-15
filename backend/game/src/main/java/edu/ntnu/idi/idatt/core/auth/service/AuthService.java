@@ -47,15 +47,17 @@ public class AuthService {
 
         String subject = user.getId().toString();
         Long schoolId = extractSchoolId(user);
+        AuthRole role = extractRole(user);
         Map<String, Object> claims = Map.of(
                 "username", user.getUsername(),
-                "schoolId", schoolId
+                "schoolId", schoolId,
+                "role", role.name()
         );
 
         String accessToken = jwtService.generateAccessToken(subject, claims);
         String refreshToken = jwtService.generateRefreshToken(subject, claims);
 
-        return buildAuthResponse(user, accessToken, refreshToken);
+        return buildAuthResponse(user, accessToken, refreshToken, role);
     }
 
     /**
@@ -77,20 +79,27 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token."));
 
         Long schoolId = extractSchoolId(user);
+        AuthRole role = extractRole(user);
         Map<String, Object> claims = Map.of(
                 "username", user.getUsername(),
-                "schoolId", schoolId
+                "schoolId", schoolId,
+                "role", role.name()
         );
         String accessToken = jwtService.generateAccessToken(subject, claims);
 
-        return buildAuthResponse(user, accessToken, refreshToken);
+        return buildAuthResponse(user, accessToken, refreshToken, role);
     }
 
-    private AuthResponse buildAuthResponse(User user, String accessToken, String refreshToken) {
+    private AuthResponse buildAuthResponse(
+            User user,
+            String accessToken,
+            String refreshToken,
+            AuthRole role
+    ) {
         return new AuthResponse(
                 accessToken,
                 refreshToken,
-                extractRole(user),
+                role,
                 buildUserResponse(user)
         );
     }

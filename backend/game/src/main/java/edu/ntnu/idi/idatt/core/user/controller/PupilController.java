@@ -9,6 +9,7 @@ import edu.ntnu.idi.idatt.core.user.service.PupilService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,16 +27,19 @@ public class PupilController {
   private final PupilService pupilService;
 
   @GetMapping("/{id}")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessPupil(authentication, #id)")
   public ResponseEntity<PupilDTO> getById(@PathVariable Long id) {
     return ResponseEntity.ok(pupilService.findById(id));
   }
 
   @GetMapping("/classroom/{classroomId}")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessClassroom(authentication, #classroomId)")
   public ResponseEntity<List<PupilDTO>> getByClassroom(@PathVariable Long classroomId) {
     return ResponseEntity.ok(pupilService.findByClassroomId(classroomId));
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasRole('TEACHER') and @schoolScope.canAccessPupil(authentication, #id)")
   public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
     pupilService.deleteById(id);
     return ResponseEntity.ok(ApiResponse.ok("Deleted"));

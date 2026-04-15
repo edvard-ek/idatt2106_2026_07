@@ -4,8 +4,8 @@ VALUES (1, 'Uranienborg Skole', '@osloskolen.no');
 INSERT INTO classrooms (id, name, head_teacher_id, school_id)
 VALUES (1, '8A', NULL, 1);
 
-INSERT INTO users (id, username, email, first_name, last_name, password)
-VALUES (1, 'alf', 'alf@osloskolen.no', 'Test', 'Teacher', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja');--Password123!
+INSERT INTO users (id, username, email, first_name, last_name, password, xp)
+VALUES (1, 'alf', 'alf@osloskolen.no', 'Test', 'Teacher', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja', '100');--Password123!
 
 INSERT INTO teachers (id, school_id)
 VALUES (1, 1);
@@ -17,8 +17,8 @@ WHERE id = 1;
 INSERT INTO classroom_teachers (classroom_id, teacher_id)
 VALUES (1, 1);
 
-INSERT INTO users (id, username, email, first_name, last_name, password)
-VALUES (2, 'snorre', 'snorre@osloskolen.no', 'Test', 'Pupil', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja'); --Password123!
+INSERT INTO users (id, username, email, first_name, last_name, password, xp)
+VALUES (2, 'snorre', 'snorre@osloskolen.no', 'Test', 'Pupil', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja', 100); --Password123!
 
 INSERT INTO pupils (id, classroom_id)
 VALUES (2, 1);

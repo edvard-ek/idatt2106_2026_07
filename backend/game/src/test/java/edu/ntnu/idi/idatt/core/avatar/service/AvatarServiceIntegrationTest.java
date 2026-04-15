@@ -9,6 +9,10 @@ import edu.ntnu.idi.idatt.core.avatar.dto.AvatarItemDTO;
 import edu.ntnu.idi.idatt.core.avatar.dto.UpdateAvatarRequest;
 import edu.ntnu.idi.idatt.core.avatar.entity.AvatarSlot;
 import edu.ntnu.idi.idatt.core.avatar.repository.AvatarRepository;
+import edu.ntnu.idi.idatt.core.classroom.entity.Classroom;
+import edu.ntnu.idi.idatt.core.classroom.repository.ClassroomRepository;
+import edu.ntnu.idi.idatt.core.user.entity.Pupil;
+import edu.ntnu.idi.idatt.core.user.repository.PupilRepository;
 import edu.ntnu.idi.idatt.game.GameApplication;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -30,16 +34,23 @@ class AvatarServiceIntegrationTest {
   @Autowired
   private AvatarRepository avatarRepository;
 
+  @Autowired
+  private PupilRepository pupilRepository;
+
+  @Autowired
+  private ClassroomRepository classroomRepository;
+
   /**
    * Tests that an avatar is created for a user.
    */
   @Test
   void saveOrUpdateCreatesAvatarForUser() {
+    Long userId = createTestPupil().getId();
     long initialCount = avatarRepository.count();
-    AvatarDTO avatar = avatarService.saveOrUpdate(2L, validRequest());
+    AvatarDTO avatar = avatarService.saveOrUpdate(userId, validRequest());
 
     assertNotNull(avatar.id());
-    assertEquals(2L, avatar.userId());
+    assertEquals(userId, avatar.userId());
     assertEquals(1L, avatar.genderItemId());
     assertEquals(initialCount + 1, avatarRepository.count());
   }
@@ -49,13 +60,14 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void saveOrUpdateUpdatesExistingAvatar() {
-    AvatarDTO created = avatarService.saveOrUpdate(2L, validRequest());
+    Long userId = createTestPupil().getId();
+    AvatarDTO created = avatarService.saveOrUpdate(userId, validRequest());
     long countAfterCreate = avatarRepository.count();
     UpdateAvatarRequest updatedRequest = new UpdateAvatarRequest(
         2L, 4L, 6L, 8L, 10L, 12L, 14L, 16L
     );
 
-    AvatarDTO updated = avatarService.saveOrUpdate(2L, updatedRequest);
+    AvatarDTO updated = avatarService.saveOrUpdate(userId, updatedRequest);
 
     assertEquals(created.id(), updated.id());
     assertEquals(2L, updated.genderItemId());
@@ -68,9 +80,10 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void findByUserIdReturnsExistingAvatar() {
-    AvatarDTO created = avatarService.saveOrUpdate(2L, validRequest());
+    Long userId = createTestPupil().getId();
+    AvatarDTO created = avatarService.saveOrUpdate(userId, validRequest());
 
-    AvatarDTO found = avatarService.findByUserId(2L);
+    AvatarDTO found = avatarService.findByUserId(userId);
 
     assertEquals(created.id(), found.id());
     assertEquals(created.userId(), found.userId());
@@ -82,7 +95,9 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void findByUserIdThrowsWhenAvatarDoesNotExist() {
-    assertThrows(EntityNotFoundException.class, () -> avatarService.findByUserId(2L));
+    Long userId = createTestPupil().getId();
+
+    assertThrows(EntityNotFoundException.class, () -> avatarService.findByUserId(userId));
   }
 
   /**
@@ -90,11 +105,12 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void saveOrUpdateThrowsWhenAvatarItemDoesNotExist() {
+    Long userId = createTestPupil().getId();
     UpdateAvatarRequest request = new UpdateAvatarRequest(
         999L, 3L, 5L, 7L, 9L, 11L, 13L, 15L
     );
 
-    assertThrows(EntityNotFoundException.class, () -> avatarService.saveOrUpdate(2L, request));
+    assertThrows(EntityNotFoundException.class, () -> avatarService.saveOrUpdate(userId, request));
   }
 
   /**
@@ -102,11 +118,12 @@ class AvatarServiceIntegrationTest {
    */
   @Test
   void saveOrUpdateThrowsWhenAvatarItemBelongsToWrongSlot() {
+    Long userId = createTestPupil().getId();
     UpdateAvatarRequest request = new UpdateAvatarRequest(
         3L, 4L, 5L, 7L, 9L, 11L, 13L, 15L
     );
 
-    assertThrows(IllegalArgumentException.class, () -> avatarService.saveOrUpdate(2L, request));
+    assertThrows(IllegalArgumentException.class, () -> avatarService.saveOrUpdate(userId, request));
   }
 
   /**
@@ -125,5 +142,21 @@ class AvatarServiceIntegrationTest {
     return new UpdateAvatarRequest(
         1L, 3L, 5L, 7L, 9L, 11L, 13L, 15L
     );
+  }
+
+  private Pupil createTestPupil() {
+    Classroom classroom = classroomRepository.findById(1L)
+        .orElseThrow(() -> new EntityNotFoundException("Classroom not found with id: 1"));
+
+    Pupil pupil = new Pupil();
+    String unique = String.valueOf(System.nanoTime());
+    pupil.setUsername("avatar-test-" + unique);
+    pupil.setEmail("avatar-test-" + unique + "@osloskolen.no");
+    pupil.setFirstName("Avatar");
+    pupil.setLastName("Test");
+    pupil.setPassword("encoded-password");
+    pupil.setClassroom(classroom);
+
+    return pupilRepository.save(pupil);
   }
 }

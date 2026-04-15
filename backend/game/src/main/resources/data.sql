@@ -24,33 +24,19 @@ INSERT INTO classroom_teachers (classroom_id, teacher_id)
 VALUES (1, 1);
 
 INSERT INTO users (id, username, email, first_name, last_name, password, xp)
+VALUES (2, 'snorre', 'snorre@osloskolen.no', 'Test', 'Pupil', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja', 100); --Password123!
+
+INSERT INTO pupils (id, classroom_id)
+VALUES (2, 1);
+
+INSERT INTO users (id, username, email, first_name, last_name, password, xp)
 VALUES (3, 'kari', 'kari@bergskole.no', 'Test', 'TeacherTwo', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja', 0);--Password123!
 
 INSERT INTO teachers (id, school_id)
 VALUES (3, 2);
 
-UPDATE classrooms
-SET head_teacher_id = 3
-WHERE id = 2;
-
 INSERT INTO classroom_teachers (classroom_id, teacher_id)
 VALUES (2, 3);
-
-INSERT INTO teachers (id, school_id)
-VALUES (3, 2);
-
-UPDATE classrooms
-SET head_teacher_id = 3
-WHERE id = 2;
-
-INSERT INTO classroom_teachers (classroom_id, teacher_id)
-VALUES (2, 3);
-
-INSERT INTO users (id, username, email, first_name, last_name, password, xp)
-VALUES (2, 'snorre', 'snorre@osloskolen.no', 'Test', 'Pupil', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja', 100); --Password123!
-
-INSERT INTO pupils (id, classroom_id)
-VALUES (2, 1);
 
 -- Avatar items test data 
 INSERT INTO avatar_items (id, name, slot)

@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import edu.ntnu.idi.idatt.core.auth.dto.AuthenticatedUser;
+
 /**
  * Authenticates requests that carry a valid JWT access token.
  */
@@ -31,18 +33,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * Extracts an access token from the request and sets authentication.
      *
-     * @param request current request
-     * @param response current response
+     * @param request     current request
+     * @param response    current response
      * @param filterChain remaining filter chain
      * @throws ServletException if filtering fails
-     * @throws IOException if I/O fails
+     * @throws IOException      if I/O fails
      */
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
 
         if (SecurityContextHolder.getContext().getAuthentication() != null
@@ -66,15 +67,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            String subject = claims.getSubject();
+            AuthenticatedUser authenticatedUser = new AuthenticatedUser(Long.valueOf(claims.getSubject()),
+                    claims.get("username", String.class),
+                    claims.get("schoolId", Long.class));
             AuthRole role = extractRole(claims);
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            subject,
-                            null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
-                    );
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+
+                    authenticatedUser,
+                    null,
+
+                    List.of(new SimpleGrantedAuthority("ROLE_" + role.name())));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception exception) {

@@ -111,4 +111,10 @@ public class JournalService {
         Integer unlockXp = journal.getUnlockXp();
         return unlockXp == null || userXp >= unlockXp;
     }
+
+    public List<JournalDTO> getJournalEntriesForCurrentUser(Long userId) {
+        return journalRepository.findByUserIdOrderByCreatedAtAsc(userId).stream()
+            .map(journalMapper::toDTO)
+            .toList();
+    }
 }

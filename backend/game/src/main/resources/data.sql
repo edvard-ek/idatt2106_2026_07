@@ -1,8 +1,14 @@
 INSERT INTO schools (id, name, email_suffix)
 VALUES (1, 'Uranienborg Skole', '@osloskolen.no');
 
+INSERT INTO schools (id, name, email_suffix)
+VALUES (2, 'Berg Skole', '@bergskole.no');
+
 INSERT INTO classrooms (id, name, head_teacher_id, school_id)
 VALUES (1, '8A', NULL, 1);
+
+INSERT INTO classrooms (id, name, head_teacher_id, school_id)
+VALUES (2, '9B', NULL, 2);
 
 INSERT INTO users (id, username, email, first_name, last_name, password)
 VALUES (1, 'alf', 'alf@osloskolen.no', 'Test', 'Teacher', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja');--Password123!
@@ -16,6 +22,19 @@ WHERE id = 1;
 
 INSERT INTO classroom_teachers (classroom_id, teacher_id)
 VALUES (1, 1);
+
+INSERT INTO users (id, username, email, first_name, last_name, password)
+VALUES (3, 'kari', 'kari@bergskole.no', 'Test', 'TeacherTwo', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja');--Password123!
+
+INSERT INTO teachers (id, school_id)
+VALUES (3, 2);
+
+UPDATE classrooms
+SET head_teacher_id = 3
+WHERE id = 2;
+
+INSERT INTO classroom_teachers (classroom_id, teacher_id)
+VALUES (2, 3);
 
 INSERT INTO users (id, username, email, first_name, last_name, password)
 VALUES (2, 'snorre', 'snorre@osloskolen.no', 'Test', 'Pupil', '$2y$10$exUh84ts9h5pXIm.QSqA3uHQ9M5ifNW.ePQs7lBNYDeCV7RZoY5ja'); --Password123!
@@ -87,8 +106,8 @@ INSERT INTO avatars (
 )
 VALUES (1, 1, 1, 3, 5, 7, 9, 11, 13, 15);
 
-ALTER TABLE schools ALTER COLUMN id RESTART WITH 2;
-ALTER TABLE classrooms ALTER COLUMN id RESTART WITH 2;
-ALTER TABLE users ALTER COLUMN id RESTART WITH 3;
+ALTER TABLE schools ALTER COLUMN id RESTART WITH 3;
+ALTER TABLE classrooms ALTER COLUMN id RESTART WITH 3;
+ALTER TABLE users ALTER COLUMN id RESTART WITH 4;
 ALTER TABLE avatars ALTER COLUMN id RESTART WITH 2;
 ALTER TABLE avatar_items ALTER COLUMN id RESTART WITH 17;

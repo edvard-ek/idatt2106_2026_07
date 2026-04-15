@@ -41,9 +41,9 @@ class SecurityRolePropagationIntegrationTest {
         String accessToken = login("alf@osloskolen.no", 1, "Password123!");
 
         mockMvc.perform(get("/api/test/auth-info")
-                        .header("Authorization", "Bearer " + accessToken))
+                .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("1"))
+                .andExpect(jsonPath("$.name").value("AuthenticatedUser[id=1, username=alf, schoolId=1]"))
                 .andExpect(jsonPath("$.authorities[0]").value("ROLE_TEACHER"));
     }
 
@@ -55,22 +55,22 @@ class SecurityRolePropagationIntegrationTest {
         String accessToken = login("snorre@osloskolen.no", 1, "Password123!");
 
         mockMvc.perform(get("/api/test/auth-info")
-                        .header("Authorization", "Bearer " + accessToken))
+                .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("2"))
+                .andExpect(jsonPath("$.name").value("AuthenticatedUser[id=2, username=snorre, schoolId=1]"))
                 .andExpect(jsonPath("$.authorities[0]").value("ROLE_PUPIL"));
     }
 
     private String login(String email, int schoolId, String password) throws Exception {
         MvcResult loginResult = mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "email": "%s",
-                                  "schoolId": %s,
-                                  "password": "%s"
-                                }
-                                """.formatted(email, schoolId, password)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "email": "%s",
+                          "schoolId": %s,
+                          "password": "%s"
+                        }
+                        """.formatted(email, schoolId, password)))
                 .andExpect(status().isOk())
                 .andReturn();
 

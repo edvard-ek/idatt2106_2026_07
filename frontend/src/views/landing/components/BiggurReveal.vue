@@ -1,43 +1,35 @@
 <template>
-  <div class="group relative mx-auto w-full max-w-[31rem]">
+  <div class="group relative mx-auto w-full rounded-[0.9rem] border border-[#4c8c94]/35 bg-[#9ce7f0] p-4 sm:p-5">
     <div
-      class="absolute inset-0 rounded-[2.25rem] bg-[#4158a6]/10 blur-3xl transition duration-500 group-hover:bg-[#ff8343]/16"
+      class="pointer-events-none absolute left-1/2 top-0 h-4 w-24 -translate-x-1/2 -translate-y-1/2 rotate-[-2deg] rounded-sm bg-[#d9f5f8]/92"
       aria-hidden="true"
     ></div>
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <p class="text-[0.72rem] font-black tracking-[0.16em] text-[#1b5f6d] uppercase">Case 01</p>
+        <p class="mt-2 text-sm leading-6 text-[#234047]">Undersøk Biggur og finn sporene.</p>
+      </div>
+      <div
+        class="rounded-[0.7rem] border border-black/10 bg-[#f6efe2] px-3 py-2 text-[0.72rem] font-black tracking-[0.12em] text-[#111111] uppercase"
+      >
+        Hold over
+      </div>
+    </div>
 
     <div
-      class="relative overflow-hidden rounded-[2.25rem] border border-black/8 bg-[linear-gradient(180deg,#fff6eb_0%,#fffdf7_100%)] px-6 pb-6 pt-5 shadow-[0_24px_70px_rgba(34,34,40,0.12)] sm:px-8 sm:pb-8 sm:pt-7"
+      class="relative mt-4 overflow-hidden rounded-[0.8rem] border border-[#2e8997]/30 bg-[#20b4cc] px-4 py-5 sm:px-5 sm:py-6"
     >
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <p class="text-[0.72rem] font-black tracking-[0.16em] text-[#4158a6] uppercase">
-            Hold musepeker for å undersøke.
-          </p>
-          <p class="mt-2 max-w-[16rem] text-sm leading-6 text-[#5f606b]">
-            Hvem er Biggur?
-          </p>
-        </div>
-        <div class="rounded-full bg-white px-3 py-2 text-[0.72rem] font-black tracking-[0.12em] uppercase">
-          Case 01
-        </div>
-      </div>
-
-      <div
-        class="relative mt-6 overflow-hidden rounded-[1.75rem] bg-[linear-gradient(180deg,#f4e5d2_0%,#fff7ee_100%)] px-4 py-6 sm:px-6"
-      >
+      <div class="relative z-10 grid min-h-[24rem] items-end">
         <div
-          class="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[linear-gradient(90deg,#ff8343_0%,#f1dec6_35%,#179bae_70%,#4158a6_100%)] opacity-90"
-          aria-hidden="true"
-        ></div>
-        <div
-          class="pointer-events-none absolute -right-10 bottom-2 h-40 w-40 rounded-full bg-[#ff8343]/16 blur-2xl"
-          aria-hidden="true"
-        ></div>
-
-        <div class="relative mx-auto w-full max-w-[23rem]">
+          class="relative mx-auto w-full max-w-[17rem] rounded-[0.8rem] border border-[#907247]/30 bg-[#fff7b8] px-4 pb-2 pt-6 transition duration-500 group-hover:-translate-y-1"
+        >
+          <div
+            class="pointer-events-none absolute left-1/2 top-0 h-4 w-18 -translate-x-1/2 -translate-y-1/2 rotate-[2deg] rounded-sm bg-[#fff1a0]/92"
+            aria-hidden="true"
+          ></div>
           <svg
             viewBox="0 0 879 1166"
-            class="w-full transition duration-500 group-hover:-translate-y-1"
+            class="w-full"
             role="img"
             aria-label="Biggur som får på seg detektivhatt og forstørrelsesglass ved hover"
           >
@@ -53,7 +45,15 @@
               <circle cx="421" cy="642" r="73" fill="#FFFAF0" />
               <circle cx="617.5" cy="649.5" r="20.5" fill="#2C2C2C" />
               <circle cx="428.5" cy="649.5" r="20.5" fill="#2C2C2C" />
-              <mask id="biggur-mask-right" style="mask-type: alpha" maskUnits="userSpaceOnUse" x="539" y="569" width="146" height="146">
+              <mask
+                id="biggur-mask-right"
+                style="mask-type: alpha"
+                maskUnits="userSpaceOnUse"
+                x="539"
+                y="569"
+                width="146"
+                height="146"
+              >
                 <path
                   d="M685 642C685 682.317 652.317 715 612 715C571.683 715 539 682.317 539 642C539 601.683 571.683 569 612 569C652.317 569 685 601.683 685 642Z"
                   fill="#FFFAF0"
@@ -62,7 +62,15 @@
               <g mask="url(#biggur-mask-right)">
                 <rect x="539" y="569" width="146" height="73" fill="#B4C5FF" />
               </g>
-              <mask id="biggur-mask-left" style="mask-type: alpha" maskUnits="userSpaceOnUse" x="348" y="569" width="146" height="146">
+              <mask
+                id="biggur-mask-left"
+                style="mask-type: alpha"
+                maskUnits="userSpaceOnUse"
+                x="348"
+                y="569"
+                width="146"
+                height="146"
+              >
                 <circle cx="421" cy="642" r="73" fill="#FFFAF0" />
               </mask>
               <g mask="url(#biggur-mask-left)">
@@ -92,12 +100,7 @@
             >
               <circle cx="421" cy="642" r="94" fill="none" stroke="#2C2C2C" stroke-width="18" />
               <circle cx="612" cy="642" r="94" fill="none" stroke="#2C2C2C" stroke-width="18" />
-              <path
-                d="M514 642H519"
-                stroke="#2C2C2C"
-                stroke-width="18"
-                stroke-linecap="round"
-              />
+              <path d="M514 642H519" stroke="#2C2C2C" stroke-width="18" stroke-linecap="round" />
               <path
                 d="M700 720L770 786"
                 stroke="#2C2C2C"
@@ -108,10 +111,16 @@
               <circle cx="612" cy="642" r="12" fill="#FFFFFF" opacity="0.42" />
             </g>
           </svg>
+
+          <div class="mt-2 rounded-[0.7rem] bg-white px-4 py-3 text-center">
+            <p
+              class="font-['Montserrat_Alternates',sans-serif] text-lg font-extrabold text-[#111111]"
+            >
+              Biggur
+            </p>
+          </div>
         </div>
       </div>
-
-
     </div>
   </div>
 </template>

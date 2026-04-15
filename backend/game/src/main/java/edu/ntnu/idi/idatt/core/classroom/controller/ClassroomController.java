@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,17 +21,26 @@ public class ClassroomController {
 
   private final ClassroomService classroomService;
 
+  @GetMapping("/me")
+  @PreAuthorize("hasRole('PUPIL')")
+  public ResponseEntity<ClassroomDTO> getMyClassroom() {
+    return ResponseEntity.ok(classroomService.findCurrentPupilClassroom());
+  }
+
   @GetMapping("/{id}")
+  @PreAuthorize("hasRole('TEACHER')")
   public ResponseEntity<ClassroomDTO> getById(@PathVariable Long id) {
     return ResponseEntity.ok(classroomService.findById(id));
   }
 
   @GetMapping("/school/{schoolId}")
+  @PreAuthorize("hasRole('TEACHER')")
   public ResponseEntity<List<ClassroomDTO>> getBySchool(@PathVariable Long schoolId) {
     return ResponseEntity.ok(classroomService.findBySchoolId(schoolId));
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasRole('TEACHER')")
   public ResponseEntity<Void> delete(@PathVariable Long id) {
     classroomService.deleteById(id);
     return ResponseEntity.noContent().build();

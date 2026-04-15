@@ -1,25 +1,25 @@
 package edu.ntnu.idi.idatt.core.school.mapper;
 
-import java.util.stream.Collectors;
-
 import edu.ntnu.idi.idatt.core.classroom.entity.Classroom;
 import edu.ntnu.idi.idatt.core.school.dto.SchoolDTO;
 import edu.ntnu.idi.idatt.core.school.entity.School;
 
+import java.util.Collections;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SchoolMapper {
 
   public SchoolDTO toDTO(School entity) {
-    SchoolDTO dto = new SchoolDTO();
-    dto.setId(entity.getId());
-    dto.setName(entity.getName());
-    dto.setEmailSuffix(entity.getEmailSuffix());
-    if (entity.getClassrooms() != null) {
-      dto.setClassroomIds(
-          entity.getClassrooms().stream().map(Classroom::getId).collect(Collectors.toList()));
-    }
-    return dto;
+    List<Long> classroomIds = entity.getClassrooms() == null
+        ? Collections.emptyList()
+        : entity.getClassrooms().stream().map(Classroom::getId).toList();
+
+    return new SchoolDTO(
+        entity.getId(),
+        entity.getName(),
+        entity.getEmailSuffix(),
+        classroomIds);
   }
 }
